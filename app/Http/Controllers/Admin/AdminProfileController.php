@@ -63,7 +63,6 @@ public function updateProfile(Request $request)
         return redirect()->back()->with('success', 'Your profile has been updated successfully.');
 
     } catch (Exception $e) {
-        // dd($e->getMessage());
         return redirect()->back()->with('error', $e->getMessage());
     }
 }
