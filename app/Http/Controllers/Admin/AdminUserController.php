@@ -14,7 +14,7 @@ class AdminUserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query()->withCount('donation'); // ✅ Fixed: no array
+        $query = User::query()->withCount('donation'); 
 
 
         $query = User::query()
@@ -46,7 +46,7 @@ class AdminUserController extends Controller
 
         $users = $query->latest()->paginate(15);
 
-        // Statistics - ✅ FIXED
+        // Statistics - 
         $stats = [
             'total_users' => User::count(),
             'total_donors' => User::whereHas('donation', function ($q) {
