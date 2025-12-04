@@ -30,7 +30,7 @@
 
 
                                         <div class="link">
-                                            <a class="default_link" href="#">Read More <i class="fa fa-long-arrow-right"></i></a>
+                                            <a class="default_link" href="{{ route('about-us') }}">Read More <i class="fa fa-long-arrow-right"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -47,17 +47,17 @@
                                         <div class="widget-content">
                                             <ul class="list">
                                                 <li>
-                                                    <a href="about.html">About Our Hopenest</a>
+                                                    <a href="{{ route('about-us') }}">About Our Hopenest</a>
                                                 </li>
 
 
                                                 <li>
-                                                    <a href="cause-1.html">Recent Campaigns</a>
+                                                    <a href="{{ route('all.campaigns') }}">Recent Campaigns</a>
                                                 </li>
 
 
                                                 <li>
-                                                    <a href="volunteer.html">Our Volunteers</a>
+                                                    <a href="volunteer.html">Become a Volunteer</a>
                                                 </li>
 
 
@@ -72,7 +72,7 @@
 
 
                                                 <li>
-                                                    <a href="event-1.html">Upcoming Events</a>
+                                                    <a href="{{ route('impact-stories.index') }}">Impact Stories</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -141,8 +141,8 @@
                                             New York, NY 10012, USA</li>
 
 
-                                            <li><i class="icon-phone"></i> <span>Phone:</span> (123) 0200 12345 &<br>
-                                            1800-45-678-9012</li>
+                                            <li><i class="icon-phone"></i> <span>Phone:</span> 09067876667 &<br>
+                                            07064941365</li>
 
 
                                             <li><i class="icon-back"></i><span>Email:</span> Emailus@Hopenest.com</li>
@@ -224,7 +224,7 @@
 
 
                 <div class="pull-right get-text">
-                    <a href="#">Join Us Now!</a>
+                    <a href="{{ route('volunteer.apply') }}">Join Us Now!</a>
                 </div>
                 <!-- /.pull-left -->
             </div>
