@@ -3,91 +3,127 @@
 namespace App\Http\Controllers\Volunteer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\Password;
 
 class VolunteerProfileController extends Controller
 {
     public function index()
     {
-        return view('volunteer.profile.index');
+        $user = Auth::user();
+        
+        return view('volunteer.profile.index', compact('user'));
     }
 
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
-        $volunteer = $user->volunteer; // Assuming one-to-one relationship
 
+        // Validate the request
         $validated = $request->validate([
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20|unique:volunteers,phone,' . ($volunteer?->id ?? ''),
-            'address' => 'nullable|string|max:500',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
         try {
-            $imagePath = $volunteer?->profile_image;
-
-            if ($request->hasFile('profile_image')) {
-                // Delete old image
-                if ($imagePath && Storage::disk('public')->exists($imagePath)) {
-                    Storage::disk('public')->delete($imagePath);
-                }
-
-                $image = $request->file('profile_image');
-                $fileName = Str::uuid() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('profile-images', $fileName, 'public');
-            }
-
-            // Update User
+            // Update user basic info
             $user->update([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
             ]);
 
-            // Update or Create Volunteer Profile
-            if (!$volunteer) {
-                $volunteer = $user->volunteer()->create([
-                    'phone' => $validated['phone'],
-                    'address' => $validated['address'],
-                    'profile_image' => $imagePath,
-                ]);
-            } else {
-                $volunteer->update([
-                    'phone' => $validated['phone'] ?? $volunteer->phone,
-                    'address' => $validated['address'] ?? $volunteer->address,
-                    'profile_image' => $imagePath ?? $volunteer->profile_image,
+            // Get or create profile
+            $profile = $user->profile;
+            
+            if (!$profile) {
+                $profile = Profile::create([
+                    'user_id' => $user->id,
+                    'phone' => $validated['phone'] ?? null,
+                    'address' => $validated['address'] ?? null,
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Profile updated successfully.');
+            // Handle profile image upload
+            if ($request->hasFile('profile_image')) {
+                Log::info('Profile image upload started for user: ' . $user->id);
+                
+                // Delete old image if exists
+                if ($profile->profile_image && Storage::disk('public')->exists($profile->profile_image)) {
+                    Storage::disk('public')->delete($profile->profile_image);
+                    Log::info('Old profile image deleted: ' . $profile->profile_image);
+                }
+
+                // Store new image
+                $imagePath = $request->file('profile_image')->store('profiles', 'public');
+                Log::info('New profile image stored: ' . $imagePath);
+                
+                $profile->profile_image = $imagePath;
+            }
+
+            // Update other profile fields
+            $profile->phone = $validated['phone'] ?? $profile->phone;
+            $profile->address = $validated['address'] ?? $profile->address;
+            $profile->save();
+
+            Log::info('Profile updated successfully for user: ' . $user->id);
+
+            return redirect()
+                ->route('volunteer.profile.index')
+                ->with('success', 'Profile updated successfully!');
 
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update profile: ' . $e->getMessage());
+            Log::error('Profile update failed: ' . $e->getMessage());
+            
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to update profile: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
     public function updatePassword(Request $request)
     {
-        $validated = $request->validate([
-            'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed',
-        ]);
-
         $user = Auth::user();
 
-        if (!Hash::check($validated['current_password'], $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect']);
-        }
-
-        $user->update([
-            'password' => Hash::make($validated['new_password'])
+        // Validate the request
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'confirmed', Password::min(8)],
         ]);
 
-        return redirect()->route('volunteer.profile.index')->with('success', 'Password updated successfully!');
+        try {
+            // Check if current password is correct
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Current password is incorrect.');
+            }
+
+            // Update password
+            $user->update([
+                'password' => Hash::make($validated['new_password']),
+            ]);
+
+            Log::info('Password updated successfully for user: ' . $user->id);
+
+            return redirect()
+                ->route('volunteer.profile.index')
+                ->with('success', 'Password updated successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Password update failed: ' . $e->getMessage());
+            
+            return redirect()
+                ->back()
+                ->with('error', 'Failed to update password. Please try again.');
+        }
     }
 }

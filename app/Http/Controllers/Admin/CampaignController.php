@@ -321,7 +321,7 @@ class CampaignController extends Controller
     {
         $campaign = Campaign::findOrFail($id);
         
-        $newCampaign = $campaign->replicate();
+        $newCampaign = $campaign->replicate(); // creates a clone of the model without copying the primary key (id).
         $newCampaign->title = $campaign->title . ' (Copy)';
         $newCampaign->slug = Str::slug($newCampaign->title) . '-' . time();
         $newCampaign->status = 'draft';

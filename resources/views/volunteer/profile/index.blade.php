@@ -1,5 +1,5 @@
 {{-- resources/views/volunteer/profile/index.blade.php --}}
-@extends('layouts.volunteer') {{-- Make sure this layout uses the same Tailwind + FontAwesome setup as admin --}}
+@extends('layouts.volunteer')
 
 @section('title', 'My Profile')
 
@@ -39,21 +39,20 @@
                 <div class="relative group">
                     @php
                         $user = Auth::user();
-                        $volunteer = $user->volunteer;
-                        $hasImage = $volunteer && $volunteer->profile_image;
-                        $imageUrl = $hasImage ? Storage::url($volunteer->profile_image) : null;
-
                         $name = $user->name ?? 'Volunteer';
                         $nameParts = explode(' ', trim($name));
                         $firstInitial = strtoupper($nameParts[0][0] ?? 'V');
                         $lastInitial = isset($nameParts[1]) ? strtoupper($nameParts[1][0]) : '';
                         $initials = $firstInitial . $lastInitial;
+                        
+                        // Check if user has profile with image
+                        $hasImage = $user->profile && $user->profile->profile_image;
                     @endphp
 
                     <div class="relative">
                         @if ($hasImage)
                             <img id="profilePreview"
-                                 src="{{ $imageUrl }}"
+                                 src="{{ $user->profileImageUrl() }}"
                                  alt="Profile"
                                  class="w-32 h-32 rounded-full object-cover border-4 border-primary/20 shadow-lg">
                         @else
@@ -130,7 +129,7 @@
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                             <i class="fas fa-phone"></i>
                         </span>
-                        <input type="tel" id="phone" name="phone" value="{{ old('phone', $volunteer?->phone) }}"
+                        <input type="tel" id="phone" name="phone" value="{{ old('phone', $user->profile?->phone) }}"
                                class="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg 
                                       bg-white dark:bg-gray-700 text-gray-800 dark:text-white
                                       focus:ring-2 focus:ring-primary/50 focus:border-primary
@@ -151,7 +150,7 @@
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                             <i class="fas fa-map-marker-alt"></i>
                         </span>
-                        <input type="text" id="address" name="address" value="{{ old('address', $volunteer?->address) }}"
+                        <input type="text" id="address" name="address" value="{{ old('address', $user->profile?->address) }}"
                                class="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg 
                                       bg-white dark:bg-gray-700 text-gray-800 dark:text-white
                                       focus:ring-2 focus:ring-primary/50 focus:border-primary
