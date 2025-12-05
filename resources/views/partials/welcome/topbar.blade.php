@@ -197,7 +197,7 @@
 
 
                                 <li>
-                                    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+                                    <a href="https://x.com/Chinaza4Okereke?t=5eqUENrIIffDmAwF_VMyMQ&s=09"><i class="fa-brands fa-x-twitter"></i></a>
                                 </li>
 
 
