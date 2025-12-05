@@ -390,7 +390,7 @@
         <!-- View All Button -->
         <div class="text-center">
             <a href="{{ route('impact-stories.index') }}" 
-               class="inline-flex items-center px-8 py-4 bg-orange-600 hover:bg-indigo-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+               class="inline-flex items-center px-8 py-4 bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
                 View All Impact Stories
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -1160,7 +1160,7 @@
                                         <div class="post-meta">
                                             February 05, 2017 | 10 Comments
                                         </div>
-                                        <a href="blog-details.html">
+                                        <a href="{{ route('blog.index') }}">
                                         <h4>New Award To Support Children<br>
                                         Affected by Crises</h4></a>
 
@@ -1182,11 +1182,10 @@
 
                                 <div class="content">
                                     <div class="post-meta">
-                                        February 05, 2017 | 10 Comments
+                                      June 02, 2017 | 12 Comments
                                     </div>
-                                    <a href="blog-details.html">
-                                    <h4>New Award To Support Children<br>
-                                    Affected by Crises</h4></a>
+                                    <a href="{{ route('blog.index') }}">
+                                    <h4>Emergency Fund Launched for Families in <br> Disaster Zones</h4></a>
                                 </div>
                             </div>
                         </div>
@@ -1212,16 +1211,15 @@
 
                                     <div class="content">
                                         <div class="post-meta">
-                                            February 05, 2017 | 10 Comments
+                                            June 02, 2017 | 12 Comments
                                         </div>
-                                        <a href="blog-details.html">
-                                        <h4>New Award To Support Children<br>
-                                        Affected by Crises</h4></a>
+                                        <a href="{{ route('blog.index') }}">
+                                        <h4>Emergency Fund Launched for Families in Disaster Zones</h4></a>
 
                                         <div class="text">
-                                            <p>Explain to you how all this mistaken idea<br>
-                                            of denouncing pleasure and praising pain was<br>
-                                            born give you a complete.</p>
+                                            <p>HopeNest has launched an emergency relief fund to support families affected by  <br>recent natural disasters.
+The fund will provide immediate essentials such as food, clean water,<br> temporary shelter, and medical aid. <br>
+This effort reflects our commitment to standing with vulnerable families when they need it most,  <br>offering hope in moments of crisis..</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1236,11 +1234,10 @@
 
                                 <div class="content">
                                     <div class="post-meta">
-                                        February 05, 2017 | 10 Comments
+                                       May 10, 2017 | 6 Comments
                                     </div>
-                                    <a href="blog-details.html">
-                                    <h4>New Award To Support Children<br>
-                                    Affected by Crises</h4></a>
+                                    <a href="{{ route('blog.index') }}">
+                                    <h4>HopeNest Begins School Renovation <br>Project</h4></a>
                                 </div>
                             </div>
                         </div>
@@ -1266,16 +1263,13 @@
 
                                     <div class="content">
                                         <div class="post-meta">
-                                            February 05, 2017 | 10 Comments
+                                           April 20, 2017 | 15 Comments
                                         </div>
-                                        <a href="blog-details.html">
-                                        <h4>New Award To Support Children<br>
-                                        Affected by Crises</h4></a>
+                                        <a href="{{ route('blog.index') }}">
+                                        <h4>New Campaign to Empower Women and Girls</h4></a>
 
                                         <div class="text">
-                                            <p>Explain to you how all this mistaken idea<br>
-                                            of denouncing pleasure and praising pain was<br>
-                                            born give you a complete.</p>
+                                            <p>HopeNest has unveiled a new initiative designed to empower women and girls through education, <br> skill training, and health awareness programs..</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1290,11 +1284,10 @@
 
                                 <div class="content">
                                     <div class="post-meta">
-                                        February 05, 2017 | 10 Comments
+                                       March 12, 2017 | 8 Comments
                                     </div>
-                                    <a href="blog-details.html">
-                                    <h4>New Award To Support Children<br>
-                                    Affected by Crises</h4></a>
+                                    <a href="{{ route('blog.index') }}">
+                                    <h4>HopeNest Launches Community Relief Program</h4></a>
                                 </div>
                             </div>
                         </div>
