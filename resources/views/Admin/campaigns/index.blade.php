@@ -240,20 +240,69 @@
                         </td>
 
                         <!-- Timeline -->
-                        <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-calendar-alt text-gray-400"></i>
-                                {{ $campaign->getFormatedDate() }}
-                            </div>
-                            @if($campaign->end_date)
-                                <div class="flex items-center gap-1 mt-1">
-                                    <i class="fas fa-clock text-gray-400"></i>
-                                    <span class="{{ $campaign->daysRemaining() <= 7 ? 'text-red-600 font-semibold' : '' }}">
-                                        {{ $campaign->daysRemaining() ?? 0 }} days left
-                                    </span>
-                                </div>
-                            @endif
-                        </td>
+                      <!-- Timeline / Time Remaining -->
+<td class="px-6 py-4 text-sm">
+    <div class="space-y-2">
+
+        <!-- Start Date -->
+        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+            <i class="fas fa-calendar-alt text-gray-400 w-4"></i>
+            <span class="text-xs font-medium">
+                Started {{ $campaign->getFormatedDate() }}
+            </span>
+        </div>
+
+        <!-- End Date & Countdown -->
+        @if($campaign->end_date)
+            @php
+                $now       = now();
+                $end       = $campaign->end_date;
+                $isPast    = $now->greaterThan($end);
+                $diff      = $now->diff($end);
+
+                // Build human-readable string
+                if ($isPast) {
+                    $timeText = 'Ended ';
+                    if ($diff->y)  $timeText .= $diff->y . 'y ';
+                    if ($diff->m)  $timeText .= $diff->m . 'mo ';
+                    if ($diff->d)  $timeText .= $diff->d . 'd ';
+                    $timeText .= 'ago';
+                } else {
+                    $parts = [];
+                    if ($diff->d > 0) $parts[] = $diff->d . 'd';
+                    if ($diff->h > 0 || count($parts)) $parts[] = $diff->h . 'h';
+                    if ($diff->i > 0 || count($parts)) $parts[] = $diff->i . 'm';
+                    if (empty($parts)) $parts[] = $diff->s . 's';
+
+                    $timeText = implode(' ', $parts) . ' left';
+                }
+            @endphp
+
+            <div class="flex items-center gap-2">
+                <i class="fas fa-clock {{ $isPast ? 'text-gray-400' : 'text-amber-500' }} w-4"></i>
+                <span class="font-semibold text-xs dark:text-gray-200
+                    {{ $isPast ? 'text-gray-500 dark:text-gray-400' : '' }}
+                    {{ !$isPast && $diff->days <= 3 ? 'text-red-600 dark:text-red-400 animate-pulse' : '' }}
+                    {{ !$isPast && $diff->days <= 7 && $diff->days > 3 ? 'text-orange-600 dark:text-orange-400' : '' }}">
+                    {{ $timeText }}
+                </span>
+
+                <!-- Urgent badge when less than or equal to 3 days left -->
+                @if(!$isPast && $diff->days <= 3 && $diff->days >= 0)
+                    <span class="ml-2 px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full animate-pulse">
+                        Urgent
+                    </span>
+                @endif
+            </div>
+        @else
+            <!-- No end date (ongoing campaign) -->
+            <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                <i class="fas fa-infinity w-4"></i>
+                <span class="text-xs font-semibold">Ongoing Campaign</span>
+            </div>
+        @endif
+    </div>
+</td>
 
                         <!-- Status -->
                         <td class="px-6 py-4">

@@ -310,6 +310,50 @@ public function resendReceipt($id)
         return back()->with('success', 'Donation refunded.');
     }
 
+
+    /**
+ * Display donations for a specific campaign
+ */
+public function campaign(Request $request, Campaign $campaign)
+{
+    $query = Donation::with(['campaign', 'user'])
+        ->where('campaign_id', $campaign->id);
+
+    // Search
+    if ($request->filled('search')) {
+        $query->where(function($q) use ($request) {
+            $q->where('donor_name', 'like', '%' . $request->search . '%')
+              ->orWhere('donor_email', 'like', '%' . $request->search . '%')
+              ->orWhere('receipt_number', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    // Filters
+    if ($request->filled('status'))       $query->where('status', $request->status);
+    if ($request->filled('min_amount'))   $query->where('amount', '>=', $request->min_amount);
+    if ($request->filled('max_amount'))   $query->where('amount', '<=', $request->max_amount);
+    if ($request->filled('date_from'))    $query->whereDate('created_at', '>=', $request->date_from);
+    if ($request->filled('date_to'))      $query->whereDate('created_at', '<=', $request->date_to);
+
+    // Export
+    if ($request->has('export')) {
+        return $this->exportCSV($query->get(), $campaign);
+    }
+
+    $donations = $query->latest()->paginate(20);
+
+    // Campaign-specific stats
+    $stats = [
+        'total'         => $campaign->donations()->count(),
+        'successful'    => $campaign->donations()->where('status', 'successful')->count(),
+        'pending'       => $campaign->donations()->where('status', 'pending')->count(),
+        'failed'        => $campaign->donations()->where('status', 'failed')->count(),
+        'total_amount'  => $campaign->donations()->where('status', 'successful')->sum('amount'),
+        'donors_count'  => $campaign->donorsCount(),
+    ];
+
+    return view('admin.donations.campaign', compact('donations', 'campaign', 'stats'));
+}
     /** Send thank you email */
     public function sendThankYou($id)
     {

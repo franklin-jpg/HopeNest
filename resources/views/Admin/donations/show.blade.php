@@ -9,9 +9,13 @@
             <nav class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                 <a href="{{ route('admin.donations.index') }}" class="hover:text-blue-600">All Donations</a>
                 <span class="mx-2">/</span>
-                <a href="{{ route('admin.campaigns.show', $donation->campaign->id) }}" class="hover:text-blue-600">
-                    {{ Str::limit($donation->campaign->title, 30) }}
-                </a>
+            @if($donation->campaign)
+                    <a href="{{ route('admin.campaigns.show', $donation->campaign->id) }}" class="hover:text-blue-600">
+                        {{ Str::limit($donation->campaign->title, 30) }}
+                    </a>
+                @else
+                    <span class="text-gray-500">[Deleted Campaign]</span>
+                @endif
                 <span class="mx-2">/</span>
                 <span>{{ $donation->receipt_number ?? 'Details' }}</span>
             </nav>
@@ -357,58 +361,73 @@
         <!-- Sidebar (Right) -->
         <div class="space-y-6">
             <!-- Campaign Info -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700">
-                <div class="border-b dark:border-gray-700 p-4">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                        <i class="fas fa-bullhorn text-blue-600"></i>
-                        Campaign
-                    </h3>
-                </div>
-                <div class="p-4">
-                    <img src="{{ asset('storage/' . $donation->campaign->featured_image) }}" 
-                         alt="{{ $donation->campaign->title }}" 
-                         class="w-full h-40 object-cover rounded-lg mb-4">
-                    
-                    <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3">
-                        {{ $donation->campaign->title }}
-                    </h4>
-                    
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
-                            <span class="text-gray-600 dark:text-gray-400">Category</span>
-                            <span class="text-gray-800 dark:text-gray-200 font-medium">
-                                {{ $donation->campaign->campaignCategory->name }}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
-                            <span class="text-gray-600 dark:text-gray-400">Status</span>
-                            <span class="px-2 py-1 rounded text-xs font-semibold
-                                @if($donation->campaign->status === 'active') bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200
-                                @elseif($donation->campaign->status === 'completed') bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200
-                                @else bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 @endif">
-                                {{ ucfirst($donation->campaign->status) }}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
-                            <span class="text-gray-600 dark:text-gray-400">Goal</span>
-                            <span class="text-gray-800 dark:text-gray-200 font-medium">
-                                ₦{{ number_format($donation->campaign->goal_amount, 2) }}
-                            </span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-600 dark:text-gray-400">Raised</span>
-                            <span class="text-green-600 dark:text-green-400 font-bold">
-                                ₦{{ number_format($donation->campaign->raised_amount, 2) }}
-                            </span>
-                        </div>
-                    </div>
+         <!-- Campaign Info -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700">
+    <div class="border-b dark:border-gray-700 p-4">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+            <i class="fas fa-bullhorn text-blue-600"></i>
+            Campaign
+        </h3>
+    </div>
+    <div class="p-4">
+        @if($donation->campaign)
+            <img src="{{ asset('storage/' . $donation->campaign->featured_image) }}" 
+                 alt="{{ $donation->campaign->title }}" 
+                 class="w-full h-40 object-cover rounded-lg mb-4">
 
-                    <a href="{{ route('admin.campaigns.show', $donation->campaign->id) }}" 
-                       class="block mt-4 text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition text-sm">
-                        <i class="fas fa-external-link-alt mr-2"></i>View Campaign
-                    </a>
+            <h4 class="font-bold text-gray-800 dark:text-gray-200 mb-3">
+                {{ $donation->campaign->title }}
+            </h4>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <span class="text-gray-600 dark:text-gray-400">Category</span>
+                    <span class="text-gray-800 dark:text-gray-200 font-medium">
+                        {{ $donation->campaign->campaignCategory?->name ?? '—' }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <span class="text-gray-600 dark:text-gray-400">Status</span>
+                    <span class="px-2 py-1 rounded text-xs font-semibold
+                        @if($donation->campaign->status === 'active') bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200
+                        @elseif($donation->campaign->status === 'completed') bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200
+                        @else bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 @endif">
+                        {{ ucfirst($donation->campaign->status) }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between pb-2 border-b dark:border-gray-700">
+                    <span class="text-gray-600 dark:text-gray-400">Goal</span>
+                    <span class="text-gray-800 dark:text-gray-200 font-medium">
+                        ₦{{ number_format($donation->campaign->goal_amount, 2) }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Raised</span>
+                    <span class="text-green-600 dark:text-green-400 font-bold">
+                        ₦{{ number_format($donation->campaign->raised_amount, 2) }}
+                    </span>
                 </div>
             </div>
+
+            <a href="{{ route('admin.campaigns.show', $donation->campaign->id) }}" 
+               class="block mt-4 text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition text-sm">
+                <i class="fas fa-external-link-alt mr-2"></i>View Campaign
+            </a>
+        @else
+            <!-- Campaign Deleted / Missing -->
+            <div class="text-center py-8">
+                <i class="fas fa-trash-alt text-5xl text-gray-400 mb-4"></i>
+                <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Campaign Deleted</p>
+                <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                    This donation was made to a campaign that no longer exists.
+                </p>
+                <p class="text-xs text-gray-400 dark:text-gray-600 mt-4">
+                    Campaign ID: #{{ $donation->campaign_id }}
+                </p>
+            </div>
+        @endif
+    </div>
+</div>
 
             <!-- Timeline -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700">
@@ -656,42 +675,61 @@
             </div>
 
             <!-- Campaign Progress -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700">
-                <div class="border-b dark:border-gray-700 p-4">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                        <i class="fas fa-chart-line text-green-600"></i>
-                        Campaign Progress
-                    </h3>
+           <!-- Campaign Progress -->
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-md border dark:border-gray-700">
+    <div class="border-b dark:border-gray-700 p-4">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+            Chart: Campaign Progress
+        </h3>
+    </div>
+    <div class="p-4">
+        @if($donation->campaign)
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-600 dark:text-gray-400">Progress</span>
+                    <span class="font-semibold text-gray-800 dark:text-gray-200">
+                        {{ number_format($donation->campaign->progress_percentage ?? 0, 1) }}%
+                    </span>
                 </div>
-                <div class="p-4">
-                    <div class="mb-2">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-600 dark:text-gray-400">Progress</span>
-                            <span class="font-semibold text-gray-800 dark:text-gray-200">
-                                {{ $donation->campaign->progress_percentage }}%
-                            </span>
-                        </div>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                            <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500" 
-                                 style="width: {{ min($donation->campaign->progress_percentage, 100) }}%"></div>
-                        </div>
-                    </div>
-                    <div class="mt-4 space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 dark:text-gray-400">Total Donors</span>
-                            <span class="font-semibold text-gray-800 dark:text-gray-200">
-                                {{ $donation->campaign->donorsCount() }}
-                            </span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 dark:text-gray-400">Remaining</span>
-                            <span class="font-semibold text-gray-800 dark:text-gray-200">
-                                ₦{{ number_format($donation->campaign->goal_amount - $donation->campaign->raised_amount, 2) }}
-                            </span>
-                        </div>
-                    </div>
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-full rounded-full transition-all duration-700"
+                         style="width: {{ min($donation->campaign->progress_percentage ?? 0, 100) }}%"></div>
                 </div>
             </div>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Total Donors</span>
+                    <span class="font-semibold text-gray-800 dark:text-gray-200">
+                        {{ $donation->campaign->donorsCount() }}
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Goal</span>
+                    <span class="font-medium dark:text-green-400">₦{{ number_format($donation->campaign->goal_amount, 2) }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Raised</span>
+                    <span class="font-bold text-green-600 dark:text-green-400">
+                        ₦{{ number_format($donation->campaign->raised_amount, 2) }}
+                    </span>
+                </div>
+                <div class="flex justify-between pt-2 border-t dark:border-gray-700">
+                    <span class="text-gray-600 dark:text-gray-400">Remaining</span>
+                    <span class="font-semibold text-gray-800 dark:text-green-400">
+                        ₦{{ number_format(max(0, $donation->campaign->goal_amount - $donation->campaign->raised_amount), 2) }}
+                    </span>
+                </div>
+            </div>
+        @else
+            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                <i class="fas fa-ban text-4xl mb-3 opacity-50"></i>
+                <p class="font-medium">Campaign no longer exists</p>
+                <p class="text-xs mt-1">Progress data unavailable</p>
+            </div>
+        @endif
+    </div>
+</div>
         </div>
     </div>
 </div>
